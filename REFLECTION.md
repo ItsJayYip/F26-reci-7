@@ -71,20 +71,16 @@ property-based testing. State two properties in English, name the pattern of
 each, and describe the generator you'd need, including anything about its
 inputs that a naive generator would get wrong.
 
-The unseen-message calculation in our Slack project would benefit from
+The file-editing module in our OpenCode project would benefit from
 property-based testing.
 
-- **Invariant:** A channel's unseen count equals the number of its messages
-  newer than that user's last-read position; it is always between zero and the
-  channel's total message count.
-- **Metamorphic:** Adding a message to a different channel does not change the
-  target channel's unseen count for the user.
+- **Invariant:** Editing one selected part of a file should leave the rest of
+  the file unchanged.
+- **Metamorphic:** Making changes to two separate parts of a file should give
+  the same result no matter which change is made first.
 
-The generator would construct users, channels, memberships, messages, and
-last-read positions together so that all referenced IDs exist. It should
-deliberately generate empty channels, several messages with nearby timestamps,
-and last-read positions at the first message, between messages, and at the last
-message. A naive generator that creates each database row independently would
-mostly produce invalid foreign keys or non-member users, and a generator using
-only widely separated random timestamps would rarely exercise the important
-read-boundary cases.
+The generator would create a short text file and then choose sections that
+actually exist in that file to edit. It should include cases such as empty
+files, one-line files, repeated lines, and replacing text with an empty string.
+A naive generator might choose positions outside the file or choose two edits
+that overlap, which would create invalid inputs instead of useful test cases.
